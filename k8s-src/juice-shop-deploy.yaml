@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snyk-juice-shop
+  labels:
+    app: snyk-juice-shop
+spec:
+  selector:
+    matchLabels:
+      app: snyk-juice-shop
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: snyk-juice-shop
+    spec:
+      containers:
+      - name: juice-shop
+        image: docker.io/rajohnston/juice-shop:0.1.9
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001
+        securityContext:
+          privileged: true
