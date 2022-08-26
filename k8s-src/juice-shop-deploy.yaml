@@ -16,9 +16,9 @@ spec:
     spec:
       containers:
       - name: juice-shop
-        image: docker.io/rajohnston/juice-shop:0.1.9
+        image: docker.io/rajohnston/juice-shop:test
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3001
+        - containerPort: 3000
         securityContext:
           privileged: true

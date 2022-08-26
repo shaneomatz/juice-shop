@@ -7,8 +7,8 @@ metadata:
     app: snyk-juice-shop
 spec:
   ports:
-    - port: 8081
-      targetPort: 3001
+    - port: 3001
+      targetPort: 3000
       protocol: TCP
   selector:
     app: snyk-juice-shop
