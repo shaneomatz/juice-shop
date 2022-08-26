@@ -32,7 +32,8 @@ jobs:
       - image: cimg/node:18.8.0
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 20.10.14
       - run: |
           TAG=0.1.<< pipeline.number >>
           docker build -t $DOCKER_USERNAME/juice-shop:$TAG .
@@ -50,7 +51,7 @@ jobs:
           snyk container test rajohnston/juice-shop:$TAG --file=./Dockerfile || true
   trigger_argocd:
     docker:
-      - image: cimg/base:2022.04
+      - image: cimg/base:2022.08
     steps:
       - run : |
           TAG=0.1.<< pipeline.number >>
