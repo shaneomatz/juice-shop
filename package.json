@@ -184,7 +184,7 @@
     "winston": "^3.3.3",
     "yaml-schema-validator": "^1.2.2",
     "z85": "^0.0.2",
-    "angular-expressions": "1.0.0"
+    "angular-expressions": "1.1.2"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
