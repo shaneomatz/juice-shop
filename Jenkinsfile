@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
 
-                    snyk_cli_dl_linux="https://github.com/snyk/snyk/releases/download/v1.838.0/snyk-linux"
+                    snyk_cli_dl_linux="https://static.snyk.io/cli/latest/snyk-linux-arm64"
                     echo "Download URL: ${snyk_cli_dl_linux}"
 
                     sh """
