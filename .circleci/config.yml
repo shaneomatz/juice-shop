@@ -1,85 +1,16 @@
-version: 2.1
+version: '2.1'
 orbs:
-  snyk: snyk/snyk@1.1.2
-
+  snyk: snyk/snyk@1.5.0
 jobs:
   build:
     docker:
-      - image: cimg/node:18.8.0
+      - image: cimg/buildpack-deps:stretch
+    environment:
+      IMAGE_NAME: juice-shop/juice-shop
     steps:
       - checkout
-      - run: npm install -q
-  snyk_code_test:
-    docker:
-    - image: snyk/snyk-cli:npm
-    steps:
-    - checkout
-    - run:
-        command: | 
-          snyk auth $SNYK_TOKEN
-          snyk code test || true
-  snyk_oss_test:
-    docker:
-    - image: cimg/node:lts
-    steps:
-    - checkout
-    - snyk/scan:
-        token-variable: SNYK_TOKEN
-        fail-on-issues: false
-        monitor-on-build: false      
-  docker_build_push:
-    docker:
-      - image: cimg/node:18.8.0
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.14
-      - run: |
-          TAG=0.1.<< pipeline.number >>
-          docker build -t $DOCKER_USERNAME/juice-shop:$TAG .
-          docker login -u $DOCKER_USERNAME --password $DOCKER_PASSWORD
-          docker push $DOCKER_USERNAME/juice-shop:$TAG 
-  snyk_container_test:
-    docker:
-    - image: snyk/snyk-cli:npm
-    steps:
-    - checkout
-    - run:
-        command: | 
-          TAG=0.1.<< pipeline.number >>
-          snyk auth $SNYK_TOKEN
-          snyk container test rajohnston/juice-shop:$TAG --file=./Dockerfile || true
-  trigger_argocd:
-    docker:
-      - image: cimg/base:2022.08
-    steps:
-      - run : |
-          TAG=0.1.<< pipeline.number >>
-          git clone https://github.com/randyjohnston/argocd-goof.git
-          cd argocd-goof
-          sed -i 's/\(rajohnston\/juice-shop\)\(.*\)/\1:'$TAG'/' goof/goof-deployment.yaml
-          git config user.email "randy.johnston@snyk.io"
-          git config user.name "randyjohnston"
-          git add goof/goof-deployment.yaml
-          git commit -m "update from circleci to trigger argocd"
-          git push https://$GITHUB_PERSONAL_TOKEN@github.com/randyjohnston/argocd-goof.git 
-workflows:
-  build_and_test:
-    jobs:
-      - build
-      - snyk_code_test:
-          requires:
-            - build
-      - snyk_oss_test:
-          requires:
-            - build
-      - docker_build_push:
-          requires:
-            - snyk_code_test
-            - snyk_oss_test
-      - snyk_container_test:
-          requires:
-            - docker_build_push
-      - trigger_argocd:
-          requires:
-            - snyk_container_test
+      - setup_remote_docker
+      - run: docker build -t $IMAGE_NAME .
+      - snyk/scan:
+          docker-image-name: $IMAGE_NAME
+workflows: null
